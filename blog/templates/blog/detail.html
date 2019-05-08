@@ -7,12 +7,15 @@
     
         <div class="container mt-5">
                 <h1>{{ post.title }}</h1>
+                {% if post.image %}
+                <img src = "{{ post.image.url }}" alt="">
+                {% endif %}
                 <p>{{ post.content }}</p>
                 <p>{{ post.updated_at }}</p><hr>
         </div>
         <a class = "btn btn-primary btn-sm" href = "{% url 'home' %}">뒤로가기</a>
-        <a class = "btn btn-primary btn-sm" href = "#">수정</a>
-        <a class = "btn btn-primary btn-sm" href = "#" onclick="return confirm('정말 삭제하시겠습니까?')">삭제</a>
+        <a class = "btn btn-primary btn-sm" href = "{% url 'edit' post.pk%}">수정</a>
+        <a class = "btn btn-primary btn-sm" href = "{% url 'remove' post.pk %}" onclick="return confirm('정말 삭제하시겠습니까?')">삭제</a>
 </div>
 
 <div class = "container mt-5">
@@ -22,7 +25,7 @@
                 {%for comment in post.comments.all %}
                 <li>
                         {{comment.text}}
-                        <small>by {{comment.author}}, {{comment.created_at}}</small><a class = "btn btn-primary btn-sm" href ="#">삭제</a>
+                        <small>by {{comment.author}}, {{comment.created_at}}</small><a class = "btn btn-primary btn-sm" href ="{% url 'comment_remove' comment.pk %}">삭제</a>
 
                 </li>
                 {% empty %}

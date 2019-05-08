@@ -20,13 +20,25 @@ def detail(request, post_id):
 
 def new(request):
     if request.method == 'POST':
-        form = PostForm(request.POST)
+        form = PostForm(request.POST, request.FILES)
         if form.is_valid():
             post = form.save()
             return redirect('detail', post.pk)
     else:
         form = PostForm()
     return render(request, 'blog/new.html', {'form': form})
+
+def edit(request,post_id):
+    if request.method == "POST":
+        post = get_object_or_404(Post, pk=post_id)
+        form = PostForm(request.POST, request.FILES, instance = post)
+        if form.is_valid():
+            form.save()
+            return redirect('detail', post.pk)
+    else:
+        post = get_object_or_404(Post, pk=post_id)
+        form = PostForm(instance = post)
+    return render(request, 'blog/edit.html', {'form': form, 'post': post})
 
 def comment_new(request, pk):
     post = get_object_or_404(Post, pk=pk) #post를 가져와서 댓글을 쓸 post를 인식함
@@ -42,3 +54,14 @@ def comment_new(request, pk):
         form = CommentForm()
     return render(request, 'blog/comment_new.html', {'form': form})
 
+def remove(request, post_id):
+    post = get_object_or_404(Post, pk=post_id)
+    post.delete()
+    return redirect('home')
+
+def comment_remove(request, comment_id):
+    comment = get_object_or_404(Comment, pk=comment_id)
+    comment.delete()
+    return redirect('detail', post_id=comment.post.pk) 
+    #detail 페이지를 가져와야 하기 때문에 comment의 pk가 아니라 comment의 post의 pk를 가져와야 한다
+    #마지막줄에 post_id 는 views.detail로 이동했을 때 사용할 'post_id'라는 변수를 정의해 준것
